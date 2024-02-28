@@ -1,0 +1,37 @@
+<div class="group">
+    <div class="group__title">
+        <div class="group__title-name">
+            @if(isShowTitle == true) {
+            <h2>{{ todoGroup.title }}</h2>
+            <button (click)="isShowTitle = false" class="button">Edit</button>
+            <button class="button" (click)="deleteGroupEvent()">Delete</button>
+            }
+            @else {
+            <input type="text" class="input" [(ngModel)]="groupTitle" aria-label="input_group" (blur)="onEnterValue()"
+                (keyup.enter)="onEnterValue()" placeholder="Write group's title" />
+            }
+        </div>
+        <div class="group__title-underline"></div>
+    </div>
+
+    <div class="group__items">
+        <ng-container *ngFor="let item of todoGroup.items; let i = index">
+            <ng-container [ngSwitch]="item.status">
+                <app-item-not-started [index]="i" [todoItem]="item" *ngSwitchCase="'not_started'"
+                    (eventChangeDescription)="handleChangeItemDescription($event)"
+                    (changeStatus)="handleChangeStatus($event)" (deleteItem)="handleDeleteItem($event)">
+                </app-item-not-started>
+                <app-item-in-progress [index]="i" [todoItem]="item" *ngSwitchCase="'in_progress'"
+                    (eventChangeDescription)="handleChangeItemDescription($event)"
+                    (changeStatus)="handleChangeStatus($event)"
+                    (deleteItem)="handleDeleteItem($event)"></app-item-in-progress>
+                <app-item-done [index]="i" [todoItem]="item" *ngSwitchCase="'done'"
+                    (eventChangeDescription)="handleChangeItemDescription($event)"
+                    (changeStatus)="handleChangeStatus($event)" (deleteItem)="handleDeleteItem($event)"></app-item-done>
+            </ng-container>
+        </ng-container>
+    </div>
+
+    <input type="text" class="input" placeholder="ToDo name..." #newTodo (blur)="addNewTodo(newTodo.value)"
+        (keyup.enter)="addNewTodo(newTodo.value); newTodo.value = ''" />
+</div>

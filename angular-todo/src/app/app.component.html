@@ -1,0 +1,17 @@
+<header>
+  <h1>Hello ToDo</h1>
+  <span>Using Angular 17</span>
+</header>
+
+<main class="main">
+  <div class="main__controls">
+    <button (click)="addGroup()" class="button">add group</button>
+  </div>
+  <div>
+    <app-todo-group [index]="i" [todoGroup]="group" *ngFor="let group of todoGroups; let i = index;"
+      (chengeTitleEvent)="handlerChengeTitle($event)" (deleteGroup)="handlerDeleteGroup($event)"
+      (addNewItem)="handlerNewItem($event)" (changeDescription)="handleChangeDescription($event)"
+      (changeItemStatus)="handleChangeStatus($event)" (deleteItem)="handleDeleteItem($event)">
+    </app-todo-group>
+  </div>
+</main>

@@ -1,0 +1,24 @@
+<div class="item">
+    <div class="item__header">
+        <img alt="not_started" class="item__img" src="../../../../assets/icons/Check.svg">
+        <span class="item__title">{{ todoItem.title }}</span>
+        <span class="item__hide" [ngClass]="isShowDescriptions ? 'item__alt-hide' : ''"
+            (click)="isShowDescriptions = !isShowDescriptions">></span>
+    </div>
+
+
+    @if(isShowDescriptions == true)
+    {
+    <div class="item__description">
+        <textarea class="textarea" [(ngModel)]="description" cols="20" rows="10"
+            placeholder="Write your todo"></textarea>
+    </div>
+    }
+
+    <div>
+        <button class="button" (click)="emitChangeStatus(todoStatus.DONE)">
+            Done
+        </button>
+        <button class="button" (click)="emitDeleteItem()">Delete</button>
+    </div>
+</div>
