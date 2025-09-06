@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-item-done',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './item-done.component.html',
-  styleUrl: './item-done.component.scss',
+    selector: 'app-item-done',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './item-done.component.html',
+    styleUrl: './item-done.component.scss'
 })
 export class ItemDoneComponent extends ItemBaseDirective {
 

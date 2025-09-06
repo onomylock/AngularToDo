@@ -7,11 +7,10 @@ import { ItemNotStartedComponent } from '../todo-item/item-not-started/item-not-
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-todo-group',
-  standalone: true,
-  imports: [CommonModule, ItemDoneComponent, ItemInProgressComponent, ItemNotStartedComponent, FormsModule],
-  templateUrl: './todo-group.component.html',
-  styleUrl: './todo-group.component.scss'
+    selector: 'app-todo-group',
+    imports: [CommonModule, ItemDoneComponent, ItemInProgressComponent, ItemNotStartedComponent, FormsModule],
+    templateUrl: './todo-group.component.html',
+    styleUrl: './todo-group.component.scss'
 })
 export class TodoGroupComponent implements OnInit {
   @Input() todoGroup!: TodoGroup;

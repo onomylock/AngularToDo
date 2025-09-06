@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-item-not-started',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './item-not-started.component.html',
-  styleUrl: './item-not-started.component.scss'
+    selector: 'app-item-not-started',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './item-not-started.component.html',
+    styleUrl: './item-not-started.component.scss'
 })
 export class ItemNotStartedComponent extends ItemBaseDirective {
 

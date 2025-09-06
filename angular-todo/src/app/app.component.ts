@@ -5,11 +5,10 @@ import { TodoGroup, TodoItem, TodoStatus } from './interfaces/todo-group.interfa
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
-  imports: [CommonModule, RouterOutlet, TodoGroupComponent]
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss',
+    imports: [CommonModule, RouterOutlet, TodoGroupComponent]
 })
 export class AppComponent {
   title = 'angular-todo';
