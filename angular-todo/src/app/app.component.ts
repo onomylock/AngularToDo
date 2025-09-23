@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
-    imports: [CommonModule, RouterOutlet, TodoGroupComponent]
+    imports: [CommonModule, TodoGroupComponent]
 })
 export class AppComponent {
   title = 'angular-todo';
