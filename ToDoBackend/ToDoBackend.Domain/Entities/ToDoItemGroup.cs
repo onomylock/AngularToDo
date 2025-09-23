@@ -6,5 +6,5 @@ public class ToDoItemGroup : EntityBase
 {
     public string Title { get; set; }
     public ICollection<User> Users { get; set; }
-    public ICollection<ToDoItem> Items { get; set; }
+    public ICollection<ToDoItem> ToDoItems { get; set; }
 }

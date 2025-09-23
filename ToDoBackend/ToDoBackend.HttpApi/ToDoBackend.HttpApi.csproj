@@ -7,7 +7,12 @@
 
     <ItemGroup>
       <Folder Include="Controllers\" />
-      <Folder Include="Extensions\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\ToDoBackend.Application\ToDoBackend.Application.csproj" />
+      <ProjectReference Include="..\ToDoBackend.Infrastructure\ToDoBackend.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

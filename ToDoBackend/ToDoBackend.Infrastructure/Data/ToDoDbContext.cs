@@ -42,13 +42,17 @@ public class ToDoDbContext : DbContext
             .Properties<DateTimeOffset?>()
             .HaveConversion<NullableDateTimeOffsetToLongConverter>();
         
-        //TODO add DateOnly
+        configurationBuilder.Properties<DateOnly>().HaveConversion<DateOnlyToLongConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        // builder.Entity<Job>();
-        // builder.Entity<Solution>(_ => { _.OwnsMany(__ => __.Files, ___ => { ___.ToJson(); }); });
+        builder.Entity<User>().HasMany(x => x.ToDoItemGroups).WithMany(x => x.Users).UsingEntity(
+            r => r.HasOne(typeof(ToDoItemGroup)).WithMany().HasForeignKey("ToDoItemGroupForeignKey"),
+            l => l.HasOne(typeof(User)).WithMany().HasForeignKey("UserForeignKey"));
+        
+        builder.Entity<ToDoItemGroup>().HasMany(x => x.ToDoItems).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
+        
     }
 
     #region Helpers

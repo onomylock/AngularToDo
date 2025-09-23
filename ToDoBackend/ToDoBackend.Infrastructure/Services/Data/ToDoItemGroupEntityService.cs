@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using Common.Common.Models;
 using Common.Domain.Repository.Base;
 using Common.Domain.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using ToDoBackend.Application.Services.Data;
 using ToDoBackend.Domain.Entities;
