@@ -55,10 +55,7 @@ internal static class ConfigureStageExtensions
             .UseCors()
             .UseWebSockets()
             //.UseOpenTelemetryPrometheusScrapingEndpoint()
-            .UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            .UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 
     public static async Task EnsureDbContextsCreated(IServiceProvider serviceProvider)

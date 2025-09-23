@@ -16,7 +16,7 @@ public class ToDoDbContext : DbContext
 
         ((SqliteConnection)Database.GetDbConnection()).DefaultTimeout = 300;
     }
-    
+
     public DbSet<User> Users { get; set; }
     public DbSet<ToDoItem> ToDoItems { get; set; }
     public DbSet<ToDoItemGroup> ToDoItemGroups { get; set; }
@@ -41,7 +41,7 @@ public class ToDoDbContext : DbContext
         configurationBuilder
             .Properties<DateTimeOffset?>()
             .HaveConversion<NullableDateTimeOffsetToLongConverter>();
-        
+
         configurationBuilder.Properties<DateOnly>().HaveConversion<DateOnlyToLongConverter>();
     }
 
@@ -50,9 +50,8 @@ public class ToDoDbContext : DbContext
         builder.Entity<User>().HasMany(x => x.ToDoItemGroups).WithMany(x => x.Users).UsingEntity(
             r => r.HasOne(typeof(ToDoItemGroup)).WithMany().HasForeignKey("ToDoItemGroupForeignKey"),
             l => l.HasOne(typeof(User)).WithMany().HasForeignKey("UserForeignKey"));
-        
+
         builder.Entity<ToDoItemGroup>().HasMany(x => x.ToDoItems).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
-        
     }
 
     #region Helpers

@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\ToDoBackend.Application\ToDoBackend.Application.csproj" />
-    <ProjectReference Include="..\ToDoBackend.Domain\ToDoBackend.Domain.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Mappers\" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Common\Common.csproj"/>
+        <ProjectReference Include="..\ToDoBackend.Application\ToDoBackend.Application.csproj"/>
+        <ProjectReference Include="..\ToDoBackend.Domain\ToDoBackend.Domain.csproj"/>
+    </ItemGroup>
 </Project>

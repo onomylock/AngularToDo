@@ -25,11 +25,11 @@ public sealed class StringTrimmingConverter : JsonConverter<string>
     /// <param name="options">serializer</param>
     public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
     {
-    //     if (value.GetType().GetCustomAttributes(true).OfType<JsonConverterDisableTrimmingAttribute>().Any())
-    //     {
-    //         writer.WriteStringValue(value);
-    //         return;
-    //     }
+        //     if (value.GetType().GetCustomAttributes(true).OfType<JsonConverterDisableTrimmingAttribute>().Any())
+        //     {
+        //         writer.WriteStringValue(value);
+        //         return;
+        //     }
 
         writer.WriteStringValue(value?.Trim());
     }

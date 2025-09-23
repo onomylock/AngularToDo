@@ -64,7 +64,7 @@ internal static class ConfigureServicesExtensions
             )
             .ConfigureHttp();
     }
-    
+
     private static IServiceCollection ConfigureDiOptions(this IServiceCollection serviceCollection,
         IConfigurationManager configurationManager)
     {
@@ -77,7 +77,7 @@ internal static class ConfigureServicesExtensions
 
         return serviceCollection;
     }
-    
+
     private static IServiceCollection ConfigureDiRepositories(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
@@ -88,13 +88,12 @@ internal static class ConfigureServicesExtensions
     private static IServiceCollection ConfigureDiServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IWarningService, WarningService>();
-        
-        
+
 
         serviceCollection.AddScoped<IToDoItemGroupEntityService, ToDoItemGroupEntityService>();
         serviceCollection.AddScoped<IToDoItemEntityService, ToDoItemEntityService>();
         serviceCollection.AddScoped<IUserEntityService, UserEntityService>();
-        
+
         return serviceCollection;
     }
 
@@ -148,7 +147,7 @@ internal static class ConfigureServicesExtensions
 
         return serviceCollection;
     }
-    
+
     private static IServiceCollection ConfigureHttp(this IServiceCollection serviceCollection)
     {
         serviceCollection
@@ -212,5 +211,4 @@ internal static class ConfigureServicesExtensions
 
         return serviceCollection;
     }
-
 }

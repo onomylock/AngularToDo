@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-      <ProjectReference Include="..\Common\Common.csproj" />
-      <ProjectReference Include="..\ToDoBackend.Domain\ToDoBackend.Domain.csproj" />
+        <ProjectReference Include="..\Common\Common.csproj"/>
+        <ProjectReference Include="..\ToDoBackend.Domain\ToDoBackend.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

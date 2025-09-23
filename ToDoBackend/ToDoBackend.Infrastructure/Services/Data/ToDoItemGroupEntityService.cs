@@ -9,7 +9,8 @@ using ToDoBackend.Infrastructure.Data;
 
 namespace ToDoBackend.Infrastructure.Services.Data;
 
-public class ToDoItemGroupEntityService(IRepositoryBase<ToDoDbContext, ToDoItemGroup> entityRepository) : IToDoItemGroupEntityService
+public class ToDoItemGroupEntityService(IRepositoryBase<ToDoDbContext, ToDoItemGroup> entityRepository)
+    : IToDoItemGroupEntityService
 {
     public Task<ToDoItemGroup> SaveAsync(ToDoItemGroup entity, CancellationToken cancellationToken = default)
     {
@@ -18,10 +19,12 @@ public class ToDoItemGroupEntityService(IRepositoryBase<ToDoDbContext, ToDoItemG
 
     public Task DeleteAsync(ToDoItemGroup entity, CancellationToken cancellationToken = default)
     {
-        return DbEntityServiceBase<ToDoDbContext, ToDoItemGroup>.DeleteAsync(entityRepository, entity, cancellationToken);
+        return DbEntityServiceBase<ToDoDbContext, ToDoItemGroup>.DeleteAsync(entityRepository, entity,
+            cancellationToken);
     }
 
-    public Task<ToDoItemGroup> GetByIdAsync(int id, bool asNoTracking = false, CancellationToken cancellationToken = default)
+    public Task<ToDoItemGroup> GetByIdAsync(int id, bool asNoTracking = false,
+        CancellationToken cancellationToken = default)
     {
         return DbEntityServiceBase<ToDoDbContext, ToDoItemGroup>.GetByIdAsync(entityRepository, id, asNoTracking,
             cancellationToken);
@@ -33,14 +36,16 @@ public class ToDoItemGroupEntityService(IRepositoryBase<ToDoDbContext, ToDoItemG
         CancellationToken cancellationToken = default
     )
     {
-        return DbEntityServiceBase<ToDoDbContext, ToDoItemGroup>.BulkUpdate(entityRepository, queryTransformationFunction,
+        return DbEntityServiceBase<ToDoDbContext, ToDoItemGroup>.BulkUpdate(entityRepository,
+            queryTransformationFunction,
             setPropertyCalls, cancellationToken);
     }
 
     public Task<int> BulkDelete(Func<IQueryable<ToDoItemGroup>, IQueryable<ToDoItemGroup>> queryTransformationFunction,
         CancellationToken cancellationToken = default)
     {
-        return DbEntityServiceBase<ToDoDbContext, ToDoItemGroup>.BulkDelete(entityRepository, queryTransformationFunction,
+        return DbEntityServiceBase<ToDoDbContext, ToDoItemGroup>.BulkDelete(entityRepository,
+            queryTransformationFunction,
             cancellationToken);
     }
 

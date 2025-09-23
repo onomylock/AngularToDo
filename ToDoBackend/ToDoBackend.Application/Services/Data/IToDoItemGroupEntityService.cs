@@ -3,4 +3,5 @@ using ToDoBackend.Domain.Entities;
 
 namespace ToDoBackend.Application.Services.Data;
 
-public interface IToDoItemGroupEntityService : IEntityServiceBase<ToDoItemGroup>, IEntityServiceCollectionBase<ToDoItemGroup>;
+public interface IToDoItemGroupEntityService : IEntityServiceBase<ToDoItemGroup>,
+    IEntityServiceCollectionBase<ToDoItemGroup>;

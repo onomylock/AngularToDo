@@ -7,7 +7,7 @@ ConfigureStageExtensions.InitBootstrapLogger();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Host.UseSerilog((context, services, configuration) =>
+builder.Host.UseSerilog((context, _, configuration) =>
 {
     configuration
         .ReadFrom.Configuration(context.Configuration, new ConfigurationReaderOptions { SectionName = "Serilog" });
