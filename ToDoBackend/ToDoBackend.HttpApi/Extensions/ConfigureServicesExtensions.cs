@@ -39,7 +39,7 @@ internal static class ConfigureServicesExtensions
                 {
                     Title = "API",
                     Version = "v1",
-                    Description = "An API of ASP.NET Core AppSvc_API"
+                    Description = "An API of ASP.NET Core"
                 });
 
                 c.EnableAnnotations();
@@ -69,8 +69,7 @@ internal static class ConfigureServicesExtensions
         IConfigurationManager configurationManager)
     {
         configurationManager.AddJsonFile("appsettings.json", false, false)
-            .AddJsonFile("appsettings.Development.json", true, false)
-            .AddDotNetEnv("node.env", LoadOptions.TraversePath())
+            .AddDotNetEnv("to_do.env", LoadOptions.TraversePath())
             .AddUserSecrets(Assembly.GetExecutingAssembly());
 
         serviceCollection.Configure<ToDoHttpApiOptions>(configurationManager.GetSection("ToDoHttpApiOptions"));
@@ -93,6 +92,8 @@ internal static class ConfigureServicesExtensions
         serviceCollection.AddScoped<IToDoItemGroupEntityService, ToDoItemGroupEntityService>();
         serviceCollection.AddScoped<IToDoItemEntityService, ToDoItemEntityService>();
         serviceCollection.AddScoped<IUserEntityService, UserEntityService>();
+        serviceCollection
+            .AddScoped<IUserToToDoItemGroupMappingEntityService, UserToToDoItemGroupMappingEntityService>();
 
         return serviceCollection;
     }

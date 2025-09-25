@@ -54,7 +54,6 @@ internal static class ConfigureStageExtensions
             .UseResponseCaching()
             .UseCors()
             .UseWebSockets()
-            //.UseOpenTelemetryPrometheusScrapingEndpoint()
             .UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 

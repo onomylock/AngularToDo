@@ -10,16 +10,12 @@ namespace ToDoBackend.Infrastructure.Mappers;
 public static class ToDoItemGroupMapper
 {
     public static async Task<IEnumerable<ToDoItemGroup>> MapCrateToDoItemGroupsRequest(
-        CreateToDoItemGroupsRequest request, IUserEntityService userEntityService,
+        CreateToDoItemGroupsRequest request,
         IToDoItemEntityService toDoItemEntityService, CancellationToken token = default)
     {
         var entities = new List<ToDoItemGroup>();
 
         var toDoItemsIds = request.Items.Select((item, index) => (index, item.ToDoItemIds));
-        var userIds = request.Items.Select((item, index) => (index, item.UserIds));
-
-        var users = await userEntityService.GetCollection(PageModel.All,
-            query => query.IntersectBy(userIds.SelectMany(x => x.UserIds).Distinct(), user => user.Id), true, token);
 
         var toDoItems = await toDoItemEntityService.GetCollection(PageModel.All,
             query => query.IntersectBy(toDoItemsIds.SelectMany(x => x.ToDoItemIds).Distinct(), toDoItem => toDoItem.Id),
@@ -27,9 +23,8 @@ public static class ToDoItemGroupMapper
 
         foreach (var dto in request.Items)
         {
-            var currentUsers = users.entities.Where(x => dto.UserIds.Contains(x.Id)).ToList();
             var currentToDoItems = toDoItems.entities.Where(x => dto.ToDoItemIds.Contains(x.Id)).ToList();
-            entities.Add(MapCreateToDoItemGroupDto(dto, currentUsers, currentToDoItems));
+            entities.Add(MapCreateToDoItemGroupDto(dto, currentToDoItems));
         }
 
         return entities;
@@ -37,16 +32,12 @@ public static class ToDoItemGroupMapper
 
     public static async Task<IEnumerable<ToDoItemGroup>> MapUpdateToDoItemGroupsRequest(
         UpdateToDoItemGroupsRequest request, IReadOnlyCollection<ToDoItemGroup> toDoItemGroups,
-        IUserEntityService userEntityService, IToDoItemEntityService toDoItemEntityService,
+        IToDoItemEntityService toDoItemEntityService,
         CancellationToken token = default)
     {
         var entities = new List<ToDoItemGroup>();
 
         var toDoItemsIds = request.Items.Select((item, index) => (index, item.ToDoItemIds));
-        var userIds = request.Items.Select((item, index) => (index, item.UserIds));
-
-        var users = await userEntityService.GetCollection(PageModel.All,
-            query => query.IntersectBy(userIds.SelectMany(x => x.UserIds).Distinct(), user => user.Id), true, token);
 
         var toDoItems = await toDoItemEntityService.GetCollection(PageModel.All,
             query => query.IntersectBy(toDoItemsIds.SelectMany(x => x.ToDoItemIds).Distinct(), toDoItem => toDoItem.Id),
@@ -54,24 +45,24 @@ public static class ToDoItemGroupMapper
 
         foreach (var dto in request.Items)
         {
-            var currentUsers = users.entities.Where(x => dto.UserIds.Contains(x.Id)).ToList();
             var currentToDoItems = toDoItems.entities.Where(x => dto.ToDoItemIds.Contains(x.Id)).ToList();
             var currentToDoItemGroup = toDoItemGroups.FirstOrDefault(x => dto.Id == x.Id) ??
                                        throw new EntityNotFoundException(
                                            $"entity {typeof(ToDoItemGroup)} with id {dto.Id} not found");
 
-            entities.Add(MapUpdateToDoItemGroupDto(currentToDoItemGroup, dto, currentUsers, currentToDoItems));
+            entities.Add(MapUpdateToDoItemGroupDto(currentToDoItemGroup, dto, currentToDoItems));
         }
 
         return entities;
     }
 
-    public static IEnumerable<ToDoItemGroupDto> MapGetToDoItemGroups(IEnumerable<ToDoItemGroup> entities)
+    public static IEnumerable<ToDoItemGroupDto> MapGetToDoItemGroups(IEnumerable<ToDoItemGroup> entities,
+        Dictionary<int, IEnumerable<int>> userDict)
     {
-        return entities.Select(MapToToDoItemGroupDto);
+        return entities.Select(x => MapToToDoItemGroupDto(x, userDict[x.Id] ?? []));
     }
 
-    private static ToDoItemGroupDto MapToToDoItemGroupDto(ToDoItemGroup entity)
+    private static ToDoItemGroupDto MapToToDoItemGroupDto(ToDoItemGroup entity, IEnumerable<int> userIds)
     {
         return new ToDoItemGroupDto
         {
@@ -79,29 +70,26 @@ public static class ToDoItemGroupMapper
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
             Title = entity.Title,
-            UserIds = entity.Users.Select(x => x.Id).ToList(),
+            UserIds = userIds,
             ToDoItemIds = entity.ToDoItems.Select(x => x.Id).ToList()
         };
     }
 
     private static ToDoItemGroup MapUpdateToDoItemGroupDto(ToDoItemGroup entity, ToDoItemGroupDto dto,
-        ICollection<User> users,
         ICollection<ToDoItem> toDoItems)
     {
         entity.Title = dto.Title;
         entity.ToDoItems = toDoItems;
-        entity.Users = users;
         return entity;
     }
 
-    private static ToDoItemGroup MapCreateToDoItemGroupDto(ToDoItemGroupDto dto, ICollection<User> users,
+    private static ToDoItemGroup MapCreateToDoItemGroupDto(ToDoItemGroupDto dto,
         ICollection<ToDoItem> toDoItems)
     {
         return new ToDoItemGroup
         {
             Id = dto.Id ?? 0,
             Title = dto.Title,
-            Users = users,
             ToDoItems = toDoItems
         };
     }

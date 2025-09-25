@@ -62,7 +62,7 @@ public sealed class ToDoItemHandler(
 
             var toUpdateIds = request.Items.Select(x => x.Id).Distinct().ToList();
             var entityToUpdate = await entityService.GetCollection(PageModel.All,
-                query => query.IntersectBy(toUpdateIds, toDoItem => toDoItem.Id), true, cancellationToken);
+                query => query.Where(x => toUpdateIds.Contains(x.Id)), true, cancellationToken);
 
             var targets = await ToDoItemMapper.MapUpdateToDoItemsRequest(request, entityToUpdate.entities,
                 userEntityService, groupEntityService, cancellationToken);
@@ -92,7 +92,7 @@ public sealed class ToDoItemHandler(
         {
             await dbContextTransactionAction.BeginTransactionAsync(cancellationToken);
 
-            await entityService.BulkDelete(query => query.IntersectBy(request.Ids, toDoItem => toDoItem.Id),
+            await entityService.BulkDelete(query => query.Where(x => request.Ids.Contains(x.Id)),
                 cancellationToken);
 
             await dbContextTransactionAction.CommitTransactionAsync(cancellationToken);
@@ -115,8 +115,9 @@ public sealed class ToDoItemHandler(
         if (request.Validate() is { } validationResult)
             return validationResult;
 
+
         var entities = await entityService.GetCollection(PageModel.All,
-            query => query.IntersectBy(request.Ids, toDoItem => toDoItem.Id), true, cancellationToken);
+            query => query.Where(x => request.Ids.Contains(x.Id)), true, cancellationToken);
 
         return new GetToDoItemsResponse { Items = ToDoItemMapper.MapToDoItem(entities.entities) };
     }

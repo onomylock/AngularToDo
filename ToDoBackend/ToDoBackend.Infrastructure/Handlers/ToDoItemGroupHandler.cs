@@ -14,7 +14,7 @@ namespace ToDoBackend.Infrastructure.Handlers;
 
 public sealed class ToDoItemGroupHandler(
     IToDoItemEntityService toDoItemEntityService,
-    IUserEntityService userEntityService,
+    IUserToToDoItemGroupMappingEntityService userToToDoItemGroupMappingEntityService,
     IToDoItemGroupEntityService entityService,
     ILogger<ToDoItemHandler> logger,
     IDbContextTransactionAction<ToDoDbContext> dbContextTransactionAction
@@ -32,7 +32,7 @@ public sealed class ToDoItemGroupHandler(
         {
             await dbContextTransactionAction.BeginTransactionAsync(cancellationToken);
 
-            var entitiesToAdd = await ToDoItemGroupMapper.MapCrateToDoItemGroupsRequest(request, userEntityService,
+            var entitiesToAdd = await ToDoItemGroupMapper.MapCrateToDoItemGroupsRequest(request,
                 toDoItemEntityService, cancellationToken);
 
             await entityService.SaveAsync(entitiesToAdd, cancellationToken);
@@ -63,10 +63,10 @@ public sealed class ToDoItemGroupHandler(
 
             var toUpdateIds = request.Items.Select(x => x.Id).Distinct().ToList();
             var entityToUpdate = await entityService.GetCollection(PageModel.All,
-                query => query.IntersectBy(toUpdateIds, toDoItem => toDoItem.Id), true, cancellationToken);
+                query => query.Where(x => toUpdateIds.Contains(x.Id)), true, cancellationToken);
 
             var targets = await ToDoItemGroupMapper.MapUpdateToDoItemGroupsRequest(request, entityToUpdate.entities,
-                userEntityService, toDoItemEntityService, cancellationToken);
+                toDoItemEntityService, cancellationToken);
 
             await entityService.SaveAsync(targets, cancellationToken);
 
@@ -93,7 +93,7 @@ public sealed class ToDoItemGroupHandler(
         {
             await dbContextTransactionAction.BeginTransactionAsync(cancellationToken);
 
-            await entityService.BulkDelete(query => query.IntersectBy(request.Ids, toDoItem => toDoItem.Id),
+            await entityService.BulkDelete(query => query.Where(x => request.Ids.Contains(x.Id)),
                 cancellationToken);
 
             await dbContextTransactionAction.CommitTransactionAsync(cancellationToken);
@@ -117,8 +117,15 @@ public sealed class ToDoItemGroupHandler(
             return validationResult;
 
         var entities = await entityService.GetCollection(PageModel.All,
-            query => query.IntersectBy(request.Ids, toDoItem => toDoItem.Id), true, cancellationToken);
+            query => query.Where(x => request.Ids.Contains(x.Id)), true, cancellationToken);
 
-        return new GetToDoItemGroupsResponse { Items = ToDoItemGroupMapper.MapGetToDoItemGroups(entities.entities) };
+        var userGroups = entities.entities
+            .Select(async x => (x.Id,
+                (await userToToDoItemGroupMappingEntityService.GetByEntityRightIdAsync(x.Id, PageModel.All, true,
+                    cancellationToken)).entities))
+            .ToDictionary(x => x.Id, x => x.Result.entities.Select(x => x.EntityLeftId));
+
+        return new GetToDoItemGroupsResponse
+            { Items = ToDoItemGroupMapper.MapGetToDoItemGroups(entities.entities, userGroups) };
     }
 }

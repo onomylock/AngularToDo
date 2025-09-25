@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Common.Domain.Models.Base;
 
-public abstract class EntityBase
+public abstract record EntityBase
 {
     [Key] public int Id { get; set; }
 

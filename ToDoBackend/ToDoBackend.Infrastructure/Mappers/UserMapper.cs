@@ -9,58 +9,49 @@ namespace ToDoBackend.Infrastructure.Mappers;
 
 internal static class UserMapper
 {
-    public static async Task<IEnumerable<User>> MapCrateUsersRequest(CreateUsersRequest request,
-        IToDoItemGroupEntityService toDoItemGroupEntityService, CancellationToken token = default)
+    public static IEnumerable<User> MapCrateUsersRequest(CreateUsersRequest request)
     {
         var entities = new List<User>();
 
-        var toDoItemsGroupIds = request.Items.Select((item, index) => (index, item.ToDoItemGroupIds));
-
-        var toDoItemGroups = await toDoItemGroupEntityService.GetCollection(PageModel.All,
-            query => query.IntersectBy(toDoItemsGroupIds.SelectMany(x => x.ToDoItemGroupIds).Distinct(),
-                user => user.Id), true, token);
-
-        foreach (var dto in request.Items)
-        {
-            var currentToDoItemGroups =
-                toDoItemGroups.entities.Where(x => dto.ToDoItemGroupIds.Contains(x.Id)).ToList();
-            entities.Add(MapCreateUserDto(dto, currentToDoItemGroups));
-        }
+        foreach (var dto in request.Items) entities.Add(MapCreateUserDto(dto));
 
         return entities;
     }
 
-    public static async Task<IEnumerable<User>> MapUpdateUsersRequest(UpdateUsersRequest request,
+    public static IEnumerable<User> MapUpdateUsersRequest(UpdateUsersRequest request,
         IReadOnlyCollection<User> users,
         IToDoItemGroupEntityService toDoItemGroupEntityService, CancellationToken token = default)
     {
         var entities = new List<User>();
 
-        var toDoItemsGroupIds = request.Items.Select((item, index) => (index, item.ToDoItemGroupIds));
-
-        var toDoItemGroups = await toDoItemGroupEntityService.GetCollection(PageModel.All,
-            query => query.IntersectBy(toDoItemsGroupIds.SelectMany(x => x.ToDoItemGroupIds).Distinct(),
-                user => user.Id), true, token);
 
         foreach (var dto in request.Items)
         {
-            var currentToDoItemGroups =
-                toDoItemGroups.entities.Where(x => dto.ToDoItemGroupIds.Contains(x.Id)).ToList();
             var currentUser = users.FirstOrDefault(x => dto.Id == x.Id) ??
                               throw new EntityNotFoundException($"entity {typeof(User)} with id {dto.Id} not found");
 
-            entities.Add(MapUpdateUserDto(currentUser, dto, currentToDoItemGroups));
+            entities.Add(MapUpdateUserDto(currentUser, dto));
         }
 
         return entities;
     }
 
-    public static IEnumerable<UserDto> MapGetUsers(IEnumerable<User> entities)
+    public static IEnumerable<UserDto> MapGetUsers(IEnumerable<User> entities,
+        Dictionary<int, IEnumerable<int>> toDoItemsDict)
     {
-        return entities.Select(MapUserDto);
+        return entities.Select(x => MapUserDto(x, toDoItemsDict[x.Id] ?? []));
     }
 
-    private static UserDto MapUserDto(User entity)
+    public static IEnumerable<UserToToDoItemGroupMapping> MapUserToToDoItemGroupMapping(User user,
+        IEnumerable<ToDoItemGroup> toDoItemGroups)
+    {
+        return toDoItemGroups.Select(x => new UserToToDoItemGroupMapping
+        {
+            EntityLeft = user, EntityLeftId = user.Id, EntityRight = x, EntityRightId = x.Id
+        });
+    }
+
+    private static UserDto MapUserDto(User entity, IEnumerable<int> toDoItemGroupIds)
     {
         return new UserDto
         {
@@ -72,13 +63,12 @@ internal static class UserMapper
             Email = entity.Email,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
-            ToDoItemGroupIds = entity.ToDoItemGroups.Select(x => x.Id).ToList()
+            ToDoItemGroupIds = toDoItemGroupIds
         };
     }
 
-    private static User MapUpdateUserDto(User entity, UserDto dto, ICollection<ToDoItemGroup> currentToDoItemGroups)
+    private static User MapUpdateUserDto(User entity, UserDto dto)
     {
-        entity.ToDoItemGroups = currentToDoItemGroups;
         entity.Email = dto.Email;
         entity.FirstName = dto.FirstName;
         entity.LastName = dto.LastName;
@@ -88,7 +78,7 @@ internal static class UserMapper
         return entity;
     }
 
-    private static User MapCreateUserDto(UserDto dto, ICollection<ToDoItemGroup> groups)
+    private static User MapCreateUserDto(UserDto dto)
     {
         return new User
         {
@@ -96,8 +86,7 @@ internal static class UserMapper
             Password = dto.Password,
             Email = dto.Email,
             FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            ToDoItemGroups = groups
+            LastName = dto.LastName
         };
     }
 }

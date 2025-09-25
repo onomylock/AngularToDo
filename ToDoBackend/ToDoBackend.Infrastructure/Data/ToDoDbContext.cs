@@ -20,6 +20,7 @@ public class ToDoDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<ToDoItem> ToDoItems { get; set; }
     public DbSet<ToDoItemGroup> ToDoItemGroups { get; set; }
+    public DbSet<UserToToDoItemGroupMapping> UserToToDoItemGroupMappings { get; set; }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -47,11 +48,18 @@ public class ToDoDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<User>().HasMany(x => x.ToDoItemGroups).WithMany(x => x.Users).UsingEntity(
-            r => r.HasOne(typeof(ToDoItemGroup)).WithMany().HasForeignKey("ToDoItemGroupForeignKey"),
-            l => l.HasOne(typeof(User)).WithMany().HasForeignKey("UserForeignKey"));
+        builder.Entity<User>();
 
         builder.Entity<ToDoItemGroup>().HasMany(x => x.ToDoItems).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
+
+        builder.Entity<UserToToDoItemGroupMapping>(_ =>
+            _.HasIndex(__ => new { __.EntityLeftId, __.EntityRightId }).IsUnique());
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite(Database.GetDbConnection().ConnectionString)
+            .UseAsyncSeeding(async (context, _, cancellationToken) => { });
     }
 
     #region Helpers

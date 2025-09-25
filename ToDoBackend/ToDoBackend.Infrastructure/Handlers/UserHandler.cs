@@ -14,6 +14,7 @@ namespace ToDoBackend.Infrastructure.Handlers;
 public sealed class UserHandler(
     IUserEntityService entityService,
     IToDoItemGroupEntityService groupEntityService,
+    IUserToToDoItemGroupMappingEntityService userToToDoItemGroupMappingEntityService,
     ILogger<ToDoItemHandler> logger,
     IDbContextTransactionAction<ToDoDbContext> dbContextTransactionAction
 ) : IUserHandler
@@ -30,8 +31,7 @@ public sealed class UserHandler(
         {
             await dbContextTransactionAction.BeginTransactionAsync(cancellationToken);
 
-            var entitiesToAdd = await UserMapper.MapCrateUsersRequest(request,
-                groupEntityService, cancellationToken);
+            var entitiesToAdd = UserMapper.MapCrateUsersRequest(request);
 
             await entityService.SaveAsync(entitiesToAdd, cancellationToken);
 
@@ -61,9 +61,9 @@ public sealed class UserHandler(
 
             var toUpdateIds = request.Items.Select(x => x.Id).Distinct().ToList();
             var entityToUpdate = await entityService.GetCollection(PageModel.All,
-                query => query.IntersectBy(toUpdateIds, toDoItem => toDoItem.Id), true, cancellationToken);
+                query => query.Where(x => toUpdateIds.Contains(x.Id)), true, cancellationToken);
 
-            var targets = await UserMapper.MapUpdateUsersRequest(request, entityToUpdate.entities, groupEntityService,
+            var targets = UserMapper.MapUpdateUsersRequest(request, entityToUpdate.entities, groupEntityService,
                 cancellationToken);
 
             await entityService.SaveAsync(targets, cancellationToken);
@@ -91,8 +91,11 @@ public sealed class UserHandler(
         {
             await dbContextTransactionAction.BeginTransactionAsync(cancellationToken);
 
-            await entityService.BulkDelete(query => query.IntersectBy(request.Ids, toDoItem => toDoItem.Id),
+            await entityService.BulkDelete(query => query.Where(x => request.Ids.Contains(x.Id)),
                 cancellationToken);
+
+            await userToToDoItemGroupMappingEntityService.BulkDelete(
+                query => query.Where(x => request.Ids.Contains(x.EntityLeftId)), cancellationToken);
 
             await dbContextTransactionAction.CommitTransactionAsync(cancellationToken);
 
@@ -115,8 +118,50 @@ public sealed class UserHandler(
             return validationResult;
 
         var entities = await entityService.GetCollection(PageModel.All,
-            query => query.IntersectBy(request.Ids, user => user.Id), true, cancellationToken);
+            query => query.Where(x => request.Ids.Contains(x.Id)), true, cancellationToken);
 
-        return new GetUsersResponse { Items = UserMapper.MapGetUsers(entities.entities) };
+        var userDict = entities.entities
+            .Select(async x => (x.Id,
+                await userToToDoItemGroupMappingEntityService.GetByEntityLeftIdAsync(x.Id, PageModel.All, true,
+                    cancellationToken))).ToDictionary(x => x.Result.Id,
+                x => x.Result.Item2.entities.Select(x => x.EntityRightId));
+
+        return new GetUsersResponse { Items = UserMapper.MapGetUsers(entities.entities, userDict) };
+    }
+
+    public async Task<IResultDtoBase> LinkUserToDoItemGroup(LinkUserToDoItemGroupsRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("LinkUserToDoItemGroupsRequest request");
+        if (request.Validate() is { } validationResult)
+            return validationResult;
+
+        try
+        {
+            await dbContextTransactionAction.BeginTransactionAsync(cancellationToken);
+
+            var targetUser = await entityService.GetByIdAsync(request.TargetUserId, true, cancellationToken);
+            var targetToDoItemGroups = await groupEntityService.GetCollection(PageModel.All,
+                query => query.Where(x => request.ToDoItemGroupIds.Contains(x.Id)), true, cancellationToken);
+
+            await userToToDoItemGroupMappingEntityService.SaveAsync(
+                UserMapper.MapUserToToDoItemGroupMapping(targetUser, targetToDoItemGroups.entities), cancellationToken);
+
+            await dbContextTransactionAction.CommitTransactionAsync(cancellationToken);
+
+            return new LinkUserToDoItemGroupsResponse();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            await dbContextTransactionAction.RollbackTransactionAsync(CancellationToken.None);
+            throw;
+        }
+    }
+
+    public Task<IResultDtoBase> UnlinkUserToDoItemGroup(UnlinkUserToDoItemGroupsRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 }

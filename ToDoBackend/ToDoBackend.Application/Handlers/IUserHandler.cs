@@ -16,4 +16,10 @@ public interface IUserHandler
 
     public Task<IResultDtoBase> GetUsers(GetUsersRequest request,
         CancellationToken cancellationToken = default);
+
+    public Task<IResultDtoBase> LinkUserToDoItemGroup(LinkUserToDoItemGroupsRequest request,
+        CancellationToken cancellationToken = default);
+
+    public Task<IResultDtoBase> UnlinkUserToDoItemGroup(UnlinkUserToDoItemGroupsRequest request,
+        CancellationToken cancellationToken = default);
 }

@@ -3,7 +3,7 @@ using Common.Domain.Models.Base;
 
 namespace ToDoBackend.Domain.Entities;
 
-public class ToDoItem : EntityBase
+public record ToDoItem : EntityBase
 {
     public string Title { get; set; }
     public string Description { get; set; }
