@@ -123,7 +123,7 @@ public sealed class ToDoItemGroupHandler(
             .Select(async x => (x.Id,
                 (await userToToDoItemGroupMappingEntityService.GetByEntityRightIdAsync(x.Id, PageModel.All, true,
                     cancellationToken)).entities))
-            .ToDictionary(x => x.Id, x => x.Result.entities.Select(x => x.EntityLeftId));
+            .ToDictionary(x => x.Id, x => x.Result.entities.Select(y => y.EntityLeftId));
 
         return new GetToDoItemGroupsResponse
             { Items = ToDoItemGroupMapper.MapGetToDoItemGroups(entities.entities, userGroups) };

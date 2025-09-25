@@ -3,6 +3,7 @@ using Common.Domain.Models.Base;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using ToDoBackend.Domain.Entities;
+using ToDoBackend.Infrastructure.SeedData;
 
 namespace ToDoBackend.Infrastructure.Data;
 
@@ -48,18 +49,21 @@ public class ToDoDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<User>();
+        builder.Entity<User>(x => x.HasData(DataSeeder.SeedUsers()));
 
-        builder.Entity<ToDoItemGroup>().HasMany(x => x.ToDoItems).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
+        builder.Entity<ToDoItemGroup>(x =>
+        {
+            x.HasData(DataSeeder.SeedToDoItemGroups());
+            x.HasMany(x => x.ToDoItems).WithOne(x => x.Group).HasForeignKey(x => x.GroupId);
+        });
+
+        builder.Entity<ToDoItem>(x => x.HasData(DataSeeder.SeedToDoItems()));
 
         builder.Entity<UserToToDoItemGroupMapping>(_ =>
-            _.HasIndex(__ => new { __.EntityLeftId, __.EntityRightId }).IsUnique());
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite(Database.GetDbConnection().ConnectionString)
-            .UseAsyncSeeding(async (context, _, cancellationToken) => { });
+        {
+            _.HasData(DataSeeder.SeedUserToToDoItemGroupMappings());
+            _.HasIndex(__ => new { __.EntityLeftId, __.EntityRightId }).IsUnique();
+        });
     }
 
     #region Helpers

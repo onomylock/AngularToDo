@@ -4,14 +4,14 @@ using ToDoBackend.Domain.Entities;
 
 namespace ToDoBackend.Infrastructure.SeedData;
 
-public static class DataSeeder
+internal static class DataSeeder
 {
-    public static void SeedData(ModelBuilder modelBuilder)
+    public static List<User> SeedUsers()
     {
         // Создаем пользователей
-        var users = new List<User>
-        {
-            new()
+        return
+        [
+            new User
             {
                 Id = 1,
                 Username = "john_doe",
@@ -22,7 +22,8 @@ public static class DataSeeder
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             },
-            new()
+
+            new User
             {
                 Id = 2,
                 Username = "jane_smith",
@@ -33,7 +34,8 @@ public static class DataSeeder
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             },
-            new()
+
+            new User
             {
                 Id = 3,
                 Username = "bob_wilson",
@@ -44,38 +46,15 @@ public static class DataSeeder
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             }
-        };
+        ];
+    }
 
-        // Создаем группы
-        var groups = new List<ToDoItemGroup>
-        {
-            new()
-            {
-                Id = 1,
-                Title = "Рабочие задачи",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow
-            },
-            new()
-            {
-                Id = 2,
-                Title = "Личные задачи",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow
-            },
-            new()
-            {
-                Id = 3,
-                Title = "Совместный проект",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow
-            }
-        };
-
+    public static List<ToDoItem> SeedToDoItems()
+    {
         // Создаем задачи
-        var todoItems = new List<ToDoItem>
-        {
-            new()
+        return
+        [
+            new ToDoItem
             {
                 Id = 1,
                 Title = "Завершить отчет",
@@ -88,7 +67,8 @@ public static class DataSeeder
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             },
-            new()
+
+            new ToDoItem
             {
                 Id = 2,
                 Title = "Купить продукты",
@@ -101,7 +81,8 @@ public static class DataSeeder
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             },
-            new()
+
+            new ToDoItem
             {
                 Id = 3,
                 Title = "Разработать API",
@@ -114,7 +95,8 @@ public static class DataSeeder
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             },
-            new()
+
+            new ToDoItem
             {
                 Id = 4,
                 Title = "Провести встречу",
@@ -127,17 +109,75 @@ public static class DataSeeder
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow
             }
-        };
+        ];
+    }
 
+    public static List<ToDoItemGroup> SeedToDoItemGroups()
+    {
+        // Создаем группы
+        return
+        [
+            new ToDoItemGroup
+            {
+                Id = 1,
+                Title = "Рабочие задачи",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            },
+
+            new ToDoItemGroup
+            {
+                Id = 2,
+                Title = "Личные задачи",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            },
+
+            new ToDoItemGroup
+            {
+                Id = 3,
+                Title = "Совместный проект",
+                CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            }
+        ];
+    }
+
+    public static List<UserToToDoItemGroupMapping> SeedUserToToDoItemGroupMappings()
+    {
         // Создаем связи многие-ко-многим между User и ToDoItemGroup
-        var userGroups = new[]
-        {
-            new { UsersId = 1, ToDoItemGroupsId = 1 },
-            new { UsersId = 1, ToDoItemGroupsId = 3 },
-            new { UsersId = 2, ToDoItemGroupsId = 1 },
-            new { UsersId = 2, ToDoItemGroupsId = 2 },
-            new { UsersId = 3, ToDoItemGroupsId = 3 },
-            new { UsersId = 3, ToDoItemGroupsId = 1 }
-        };
+        return
+        [
+            new UserToToDoItemGroupMapping
+            {
+                Id = 1, EntityLeftId = 1, EntityRightId = 1, CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            },
+            new UserToToDoItemGroupMapping
+            {
+                Id = 2, EntityLeftId = 1, EntityRightId = 3, CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            },
+            new UserToToDoItemGroupMapping
+            {
+                Id = 3, EntityLeftId = 2, EntityRightId = 1, CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            },
+            new UserToToDoItemGroupMapping
+            {
+                Id = 4, EntityLeftId = 2, EntityRightId = 2, CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            },
+            new UserToToDoItemGroupMapping
+            {
+                Id = 5, EntityLeftId = 3, EntityRightId = 3, CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            },
+            new UserToToDoItemGroupMapping
+            {
+                Id = 6, EntityLeftId = 3, EntityRightId = 1, CreatedAt = DateTimeOffset.UtcNow,
+                UpdatedAt = DateTimeOffset.UtcNow
+            }
+        ];
     }
 }

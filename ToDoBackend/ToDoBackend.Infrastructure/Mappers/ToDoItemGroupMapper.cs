@@ -71,7 +71,7 @@ public static class ToDoItemGroupMapper
             UpdatedAt = entity.UpdatedAt,
             Title = entity.Title,
             UserIds = userIds,
-            ToDoItemIds = entity.ToDoItems.Select(x => x.Id).ToList()
+            ToDoItemIds = entity.ToDoItems?.Select(x => x.Id).ToList()
         };
     }
 
