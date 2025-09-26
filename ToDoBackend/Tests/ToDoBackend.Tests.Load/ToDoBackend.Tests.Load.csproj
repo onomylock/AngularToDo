@@ -1,20 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <ServerGarbageCollection>false</ServerGarbageCollection>
+        <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NBomber" />
-      <PackageReference Include="NBomber.Http" />
-      <PackageReference Include="NBomber.Sinks.Timescale" />
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="NBomber" />
+        <PackageReference Include="NBomber.Http" />
+        <PackageReference Include="NUnit"/>
+        <PackageReference Include="NUnit.Analyzers"/>
+        <PackageReference Include="NUnit3TestAdapter"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\ToDoBackend.Application\ToDoBackend.Application.csproj" />
+        <Content Include="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
 </Project>
