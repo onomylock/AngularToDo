@@ -12,7 +12,7 @@ public class GlobalSetup
     {
         Configuration = new ConfigurationBuilder()
             .SetBasePath(TestContext.CurrentContext.TestDirectory)
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", true, true)
             .Build();
     }
 }
